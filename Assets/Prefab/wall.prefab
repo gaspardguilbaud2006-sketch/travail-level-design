@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc96121043d0304496e6dca23ffd5bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followSpeed: 80
+  followSpeed: 100
   momentumFactor: 0.25
   velocityBufferSize: 3
   throwForceMultiplier: 2

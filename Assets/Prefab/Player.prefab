@@ -175,8 +175,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f001cdb8881be2428c0afb6638a1bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startSpeed: 2
-  maxSpeed: 5
+  startSpeed: 1
+  maxSpeed: 4
   acceleration: 0.5
   lerpSpeed: 2
   GameOver: 0
