@@ -108,7 +108,7 @@ CircleCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 048dfe3a15321f143b376aa66a87a837, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -173,12 +173,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc96121043d0304496e6dca23ffd5bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followSpeed: 40
+  followSpeed: 80
   momentumFactor: 0.25
   velocityBufferSize: 3
   throwForceMultiplier: 2
-  playerRb: {fileID: 0}
-  playerScript: {fileID: 0}
+  playerRb: {fileID: 8933881697105315, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
+  playerScript: {fileID: 2231013035172352848, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
 --- !u!1 &845096304197807037
 GameObject:
   m_ObjectHideFlags: 0
