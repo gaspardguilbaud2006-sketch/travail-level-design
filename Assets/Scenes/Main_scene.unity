@@ -599,8 +599,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f001cdb8881be2428c0afb6638a1bec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startSpeed: 5
-  maxSpeed: 7
+  startSpeed: 2
+  maxSpeed: 5
   acceleration: 0.5
   lerpSpeed: 2
   GameOver: 0
@@ -619,7 +619,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
