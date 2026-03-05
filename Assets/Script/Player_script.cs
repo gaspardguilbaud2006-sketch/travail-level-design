@@ -1,18 +1,13 @@
 using UnityEngine;
-using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class Player_script : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed = 5f;
-
-    [Header("Life System")]
-    public int maxLives = 3;
-    private int currentLives;
-
-    [Header("Invincibility")]
-    public float invincibilityDuration = 1.5f;
-    private bool isInvincible = false;
+    public float startSpeed = 5f;
+    public float maxSpeed = 20f;
+    public float acceleration = 0.5f;
+    public float lerpSpeed = 2f;
 
     [Header("Game State")]
     public bool GameOver = false;
@@ -20,16 +15,12 @@ public class Player_script : MonoBehaviour
     private Rigidbody2D rb;
     private bool isGrounded = false;
 
-    private SpriteRenderer spriteRenderer;
-    private Color originalColor;
+    private float targetSpeed;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-
-        originalColor = spriteRenderer.color;
-        currentLives = maxLives;
+        targetSpeed = startSpeed;
     }
 
     void Update()
@@ -46,6 +37,12 @@ public class Player_script : MonoBehaviour
 
     void MovePlayer()
     {
+
+        targetSpeed += acceleration * Time.deltaTime;
+        targetSpeed = Mathf.Clamp(targetSpeed, startSpeed, maxSpeed);
+
+        float currentSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, lerpSpeed * Time.deltaTime);
+
         float yVelocity = rb.linearVelocity.y;
 
         if (isGrounded)
@@ -53,17 +50,14 @@ public class Player_script : MonoBehaviour
             yVelocity = 0f;
         }
 
-        rb.linearVelocity = new Vector2(moveSpeed, yVelocity);
+        rb.linearVelocity = new Vector2(currentSpeed, yVelocity);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            if (!isInvincible)
-            {
-                TakeDamage();
-            }
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         if (collision.gameObject.CompareTag("Ground"))
@@ -86,29 +80,5 @@ public class Player_script : MonoBehaviour
         {
             isGrounded = false;
         }
-    }
-
-    void TakeDamage()
-    {
-        currentLives--;
-
-        if (currentLives <= 0)
-        {
-            GameOver = true;
-            return;
-        }
-
-        StartCoroutine(InvincibilityCoroutine());
-    }
-
-    IEnumerator InvincibilityCoroutine()
-    {
-        isInvincible = true;
-        spriteRenderer.color = Color.red;
-
-        yield return new WaitForSeconds(invincibilityDuration);
-        spriteRenderer.color = originalColor;
-
-        isInvincible = false;
     }
 }

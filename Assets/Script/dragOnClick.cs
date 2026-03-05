@@ -12,8 +12,13 @@ public class dragOnClick : MonoBehaviour
     [Range(0f, 1f)]
     public float momentumFactor = 0.5f;
 
+    [Header("Throw Settings")]
+    public int velocityBufferSize = 3;        // Moins de frames = plus réactif
+    [Range(1f, 5f)]
+    public float throwForceMultiplier = 2f;   // Amplifie l'inertie au lancer
+
     [Header("Player Reference")]
-    public Rigidbody2D playerRb; 
+    public Rigidbody2D playerRb;
     public Player_script playerScript;
 
     private bool isDragging = false;
@@ -24,8 +29,11 @@ public class dragOnClick : MonoBehaviour
     private Rigidbody2D rb;
 
     private float originalGravity;
-    private Vector3 lastPosition;
+
+    private Vector3 lastMouseWorldPos;
     private Vector3 currentVelocity;
+    private Vector3[] velocityBuffer;
+    private int velocityBufferIndex = 0;
 
     void Start()
     {
@@ -33,16 +41,12 @@ public class dragOnClick : MonoBehaviour
         objectCollider = GetComponent<Collider2D>();
         rb = GetComponent<Rigidbody2D>();
         originalGravity = rb.gravityScale;
+        velocityBuffer = new Vector3[velocityBufferSize];
 
         if (playerRb == null)
-        {
             Debug.LogWarning("Player Rigidbody2D non assigné !");
-        }
-
         if (playerScript == null)
-        {
             Debug.LogWarning("Player_script non assigné !");
-        }
     }
 
     void Update()
@@ -51,12 +55,7 @@ public class dragOnClick : MonoBehaviour
 
         if (playerScript != null && playerScript.GameOver)
         {
-            if (isDragging)
-            {
-                isDragging = false;
-                rb.gravityScale = originalGravity;
-                rb.linearVelocity = currentVelocity * momentumFactor;
-            }
+            if (isDragging) StopDragging();
             return;
         }
 
@@ -70,41 +69,56 @@ public class dragOnClick : MonoBehaviour
             {
                 isDragging = true;
                 offset = transform.position - mouseWorldPos;
+                lastMouseWorldPos = mouseWorldPos;
+                velocityBufferIndex = 0;
 
                 rb.gravityScale = 0f;
                 rb.linearVelocity = Vector2.zero;
-                lastPosition = transform.position;
+
+                velocityBuffer = new Vector3[velocityBufferSize];
             }
         }
 
         if (Mouse.current.leftButton.wasReleasedThisFrame && isDragging)
         {
-            isDragging = false;
-            rb.gravityScale = originalGravity;
-            rb.linearVelocity = currentVelocity * momentumFactor;
+            StopDragging();
         }
 
-        // Drag
         if (isDragging)
         {
             Vector3 targetPosition = mouseWorldPos + offset;
 
-            float playerSpeedX = 0f;
             if (playerRb != null && playerRb.linearVelocity.x > 0f)
-            {
-                playerSpeedX = playerRb.linearVelocity.x * Time.deltaTime;
-            }
-
-            targetPosition.x += playerSpeedX;
+                targetPosition.x += playerRb.linearVelocity.x * Time.deltaTime;
 
             Vector3 direction = targetPosition - transform.position;
             Vector3 smoothPosition = transform.position + direction * Mathf.Clamp01(followSpeed * Time.deltaTime);
-
             rb.MovePosition(smoothPosition);
 
-            currentVelocity = (smoothPosition - lastPosition) / Time.deltaTime;
-            lastPosition = smoothPosition;
+            // Stocke uniquement les N dernières frames (circulaire)
+            Vector3 frameVelocity = (mouseWorldPos - lastMouseWorldPos) / Time.deltaTime;
+            velocityBuffer[velocityBufferIndex % velocityBufferSize] = frameVelocity;
+            velocityBufferIndex++;
+
+            // Moyenne pondérée : les frames récentes ont plus de poids
+            currentVelocity = Vector3.zero;
+            float totalWeight = 0f;
+            for (int i = 0; i < velocityBufferSize; i++)
+            {
+                float weight = i + 1f; // Frame la plus récente = poids le plus élevé
+                currentVelocity += velocityBuffer[i] * weight;
+                totalWeight += weight;
+            }
+            currentVelocity /= totalWeight;
+
+            lastMouseWorldPos = mouseWorldPos;
         }
     }
-}
 
+    void StopDragging()
+    {
+        isDragging = false;
+        rb.gravityScale = originalGravity;
+        rb.linearVelocity = currentVelocity * momentumFactor * throwForceMultiplier;
+    }
+}
