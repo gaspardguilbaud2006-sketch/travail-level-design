@@ -185,7 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectType: 1
-  maxSpeed: 8
-  acceleration: 5
+  maxSpeed: 10
+  acceleration: 8
   deceleration: 5
   player: {fileID: 703550135162952035, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}

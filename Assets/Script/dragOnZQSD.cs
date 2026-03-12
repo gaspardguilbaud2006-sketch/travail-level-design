@@ -25,13 +25,14 @@ public class KeyboardMovable : MonoBehaviour
     private bool playerTouchingCeiling;
     private bool playerTouchingGround;
 
+    private Vector2 currentVelocity;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         objectCollider = GetComponent<Collider2D>();
 
         rb.gravityScale = 0f;
-        rb.linearDamping = 0f;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
         if (player != null)
@@ -44,7 +45,6 @@ public class KeyboardMovable : MonoBehaviour
     {
         float input = ReadInput();
 
-        // Détection collisions player
         playerTouchingThis = playerCollider != null && playerCollider.IsTouching(objectCollider);
         playerTouchingCeiling = false;
         playerTouchingGround = false;
@@ -63,29 +63,38 @@ public class KeyboardMovable : MonoBehaviour
                 if (hit.CompareTag("Ground")) playerTouchingGround = true;
             }
 
-            // Bloquer si le player est coincé entre mur et sol/plafond
             if (playerTouchingCeiling && input > 0f) input = 0f;
             if (playerTouchingGround && input < 0f) input = 0f;
         }
 
-        // Appliquer le mouvement sur le bon axe
-        Vector2 force = objectType == ObjectType.Wall
-            ? new Vector2(0f, input)     // Mur : Z/S → axe Y
-            : new Vector2(input, 0f);    // Plateforme : Q/D → axe X
+        Vector2 direction = objectType == ObjectType.Wall
+            ? new Vector2(0f, input)
+            : new Vector2(input, 0f);
 
-        if (input != 0f)
+        // RESET VELOCITY SI ON CHANGE DE DIRECTION
+        if (direction.x != 0 && Mathf.Sign(direction.x) != Mathf.Sign(currentVelocity.x))
+            currentVelocity.x = 0;
+
+        if (direction.y != 0 && Mathf.Sign(direction.y) != Mathf.Sign(currentVelocity.y))
+            currentVelocity.y = 0;
+
+        // Accélération
+        if (direction != Vector2.zero)
         {
-            rb.AddForce(force * acceleration);
-            rb.linearVelocity = Vector2.ClampMagnitude(rb.linearVelocity, maxSpeed);
+            currentVelocity += direction * acceleration * Time.fixedDeltaTime;
+            currentVelocity = Vector2.ClampMagnitude(currentVelocity, maxSpeed);
         }
         else
         {
-            rb.linearVelocity = Vector2.MoveTowards(
-                rb.linearVelocity,
+            currentVelocity = Vector2.MoveTowards(
+                currentVelocity,
                 Vector2.zero,
                 deceleration * Time.fixedDeltaTime
             );
         }
+
+        Vector2 move = currentVelocity * Time.fixedDeltaTime;
+        rb.MovePosition(rb.position + move);
     }
 
     float ReadInput()
@@ -94,14 +103,12 @@ public class KeyboardMovable : MonoBehaviour
 
         if (objectType == ObjectType.Wall)
         {
-            // Z = haut, S = bas
-            if (Keyboard.current.zKey.isPressed) return 1f;
+            if (Keyboard.current.wKey.isPressed) return 1f;
             if (Keyboard.current.sKey.isPressed) return -1f;
         }
         else
         {
-            // Q = gauche, D = droite
-            if (Keyboard.current.qKey.isPressed) return -1f;
+            if (Keyboard.current.aKey.isPressed) return -1f;
             if (Keyboard.current.dKey.isPressed) return 1f;
         }
 
