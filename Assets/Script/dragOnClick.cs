@@ -8,14 +8,10 @@ public class dragOnClick : MonoBehaviour
     [Header("Follow Settings")]
     public float followSpeed = 10f;
 
-    [Header("Momentum Settings")]
-    [Range(0f, 1f)]
-    public float momentumFactor = 0.5f;
-
     [Header("Throw Settings")]
-    public int velocityBufferSize = 3;        // Moins de frames = plus réactif
-    [Range(1f, 5f)]
-    public float throwForceMultiplier = 2f;   // Amplifie l'inertie au lancer
+    [Range(1f, 10f)]
+    public float throwForceMultiplier = 3f;
+    public float maxThrowSpeed = 20f;
 
     [Header("Player Reference")]
     public Rigidbody2D playerRb;
@@ -30,10 +26,14 @@ public class dragOnClick : MonoBehaviour
 
     private float originalGravity;
 
-    private Vector3 lastMouseWorldPos;
-    private Vector3 currentVelocity;
-    private Vector3[] velocityBuffer;
-    private int velocityBufferIndex = 0;
+    // Les deux dernières positions enregistrées en FixedUpdate
+    private Vector3 prevPosition;
+    private Vector3 lastPosition;
+    private float prevTime;
+    private float lastTime;
+
+    // Vélocité calculée en continu pendant le drag
+    private Vector2 lastComputedVelocity = Vector2.zero;
 
     void Start()
     {
@@ -41,7 +41,6 @@ public class dragOnClick : MonoBehaviour
         objectCollider = GetComponent<Collider2D>();
         rb = GetComponent<Rigidbody2D>();
         originalGravity = rb.gravityScale;
-        velocityBuffer = new Vector3[velocityBufferSize];
 
         if (playerRb == null)
             Debug.LogWarning("Player Rigidbody2D non assigné !");
@@ -63,27 +62,31 @@ public class dragOnClick : MonoBehaviour
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
         mouseWorldPos.z = 0f;
 
+        // Début du drag
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             if (objectCollider.OverlapPoint(mouseWorldPos))
             {
                 isDragging = true;
                 offset = transform.position - mouseWorldPos;
-                lastMouseWorldPos = mouseWorldPos;
-                velocityBufferIndex = 0;
 
                 rb.gravityScale = 0f;
                 rb.linearVelocity = Vector2.zero;
+                lastComputedVelocity = Vector2.zero;
 
-                velocityBuffer = new Vector3[velocityBufferSize];
+                // Initialise les deux slots avec la position actuelle
+                prevPosition = transform.position;
+                lastPosition = transform.position;
+                prevTime = Time.fixedTime;
+                lastTime = Time.fixedTime;
             }
         }
 
+        // Fin du drag
         if (Mouse.current.leftButton.wasReleasedThisFrame && isDragging)
-        {
             StopDragging();
-        }
 
+        // Déplacement pendant le drag (dans Update pour la réactivité souris)
         if (isDragging)
         {
             Vector3 targetPosition = mouseWorldPos + offset;
@@ -94,24 +97,26 @@ public class dragOnClick : MonoBehaviour
             Vector3 direction = targetPosition - transform.position;
             Vector3 smoothPosition = transform.position + direction * Mathf.Clamp01(followSpeed * Time.deltaTime);
             rb.MovePosition(smoothPosition);
+        }
+    }
 
-            // Stocke uniquement les N dernières frames (circulaire)
-            Vector3 frameVelocity = (mouseWorldPos - lastMouseWorldPos) / Time.deltaTime;
-            velocityBuffer[velocityBufferIndex % velocityBufferSize] = frameVelocity;
-            velocityBufferIndex++;
+    void FixedUpdate()
+    {
+        if (!isDragging) return;
 
-            // Moyenne pondérée : les frames récentes ont plus de poids
-            currentVelocity = Vector3.zero;
-            float totalWeight = 0f;
-            for (int i = 0; i < velocityBufferSize; i++)
-            {
-                float weight = i + 1f; // Frame la plus récente = poids le plus élevé
-                currentVelocity += velocityBuffer[i] * weight;
-                totalWeight += weight;
-            }
-            currentVelocity /= totalWeight;
+        // Décale : l'ancien "last" devient "prev", et on enregistre la nouvelle position
+        prevPosition = lastPosition;
+        prevTime = lastTime;
 
-            lastMouseWorldPos = mouseWorldPos;
+        lastPosition = transform.position;
+        lastTime = Time.fixedTime;
+
+        // Calcule la vélocité entre les deux dernières frames physiques
+        float deltaTime = lastTime - prevTime;
+        if (deltaTime > 0f)
+        {
+            Vector2 velocity = ((Vector2)(lastPosition - prevPosition) / deltaTime) * throwForceMultiplier;
+            lastComputedVelocity = Vector2.ClampMagnitude(velocity, maxThrowSpeed);
         }
     }
 
@@ -119,6 +124,8 @@ public class dragOnClick : MonoBehaviour
     {
         isDragging = false;
         rb.gravityScale = originalGravity;
-        rb.linearVelocity = currentVelocity * momentumFactor * throwForceMultiplier;
+
+        // Applique directement la dernière vélocité calculée dans FixedUpdate
+        rb.linearVelocity = lastComputedVelocity;
     }
 }
