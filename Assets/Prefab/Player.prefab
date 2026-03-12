@@ -177,7 +177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startSpeed: 1
   maxSpeed: 4
-  acceleration: 1.5
+  acceleration: 0.75
   lerpSpeed: 2
   bounceBackSpeed: 4
   bounceUpForce: 3
