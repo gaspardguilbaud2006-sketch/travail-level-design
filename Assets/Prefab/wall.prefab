@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4631230869893522534}
   - component: {fileID: 7767911961116957955}
   - component: {fileID: 3149018895990841732}
+  - component: {fileID: 8263634298631692941}
   m_Layer: 0
   m_Name: wall
   m_TagString: Untagged
@@ -161,7 +162,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 5
 --- !u!114 &3149018895990841732
 MonoBehaviour:
@@ -170,14 +171,30 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7490743719077423253}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7bc96121043d0304496e6dca23ffd5bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   followSpeed: 100
-  momentumFactor: 0.25
-  velocityBufferSize: 3
   throwForceMultiplier: 2
+  maxThrowSpeed: 20
   playerRb: {fileID: 8933881697105315, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
   playerScript: {fileID: 2231013035172352848, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
+--- !u!114 &8263634298631692941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7490743719077423253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bd28e5baab8f0d4288450b6026e0a9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSpeed: 40
+  acceleration: 20
+  deceleration: 25
+  player: {fileID: 703550135162952035, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
+  playerCollider: {fileID: 6931732885317022292, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
