@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2672554835007114453}
   - component: {fileID: 1459102262284764544}
   - component: {fileID: 8171006208428648583}
+  - component: {fileID: -4378156070641386305}
   m_Layer: 0
   m_Name: Platform
   m_TagString: Untagged
@@ -124,15 +125,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8311321495048471558}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7bc96121043d0304496e6dca23ffd5bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   followSpeed: 80
-  momentumFactor: 0
-  velocityBufferSize: 3
   throwForceMultiplier: 2
+  maxThrowSpeed: 20
   playerRb: {fileID: 8933881697105315, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
   playerScript: {fileID: 2231013035172352848, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
 --- !u!70 &8171006208428648583
@@ -172,3 +172,20 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1, y: 1}
   m_Direction: 1
+--- !u!114 &-4378156070641386305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8311321495048471558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bd28e5baab8f0d4288450b6026e0a9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectType: 1
+  maxSpeed: 8
+  acceleration: 5
+  deceleration: 5
+  player: {fileID: 703550135162952035, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}

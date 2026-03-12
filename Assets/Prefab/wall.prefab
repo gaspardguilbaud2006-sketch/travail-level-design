@@ -193,8 +193,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd28e5baab8f0d4288450b6026e0a9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectType: 0
   maxSpeed: 40
   acceleration: 20
   deceleration: 25
   player: {fileID: 703550135162952035, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
-  playerCollider: {fileID: 6931732885317022292, guid: fe599e530b4c4e340a996d1e6228069a, type: 3}
