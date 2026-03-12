@@ -7,6 +7,7 @@ public class ObstacleMirror : MonoBehaviour
     public Rigidbody2D target;
 
     private Rigidbody2D rb;
+    private Vector2 lastTargetPosition;
 
     void Start()
     {
@@ -14,14 +15,23 @@ public class ObstacleMirror : MonoBehaviour
         rb.gravityScale = 0f;
 
         if (target == null)
+        {
             Debug.LogWarning("Aucune cible assignée sur " + gameObject.name);
+            return;
+        }
+
+        lastTargetPosition = target.position;
     }
 
     void FixedUpdate()
     {
         if (target == null) return;
 
-        // Copie exacte de la vélocité de la cible
-        rb.linearVelocity = target.linearVelocity;
+        // Vecteur de déplacement de la cible depuis la dernière frame physique
+        Vector2 delta = target.position - lastTargetPosition;
+        lastTargetPosition = target.position;
+
+        // Applique le même vecteur de déplacement à l'obstacle
+        rb.MovePosition(rb.position + delta);
     }
 }
