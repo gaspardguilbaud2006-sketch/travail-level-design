@@ -10,9 +10,9 @@ public class Player_script : MonoBehaviour
     public float lerpSpeed = 2f;
 
     [Header("Wall Bounce")]
-    public float bounceBackSpeed = 8f;      // Vitesse de recul horizontal
-    public float bounceUpForce = 6f;        // Force du saut arrière
-    public float bounceDuration = 0.4f;     // Durée du recul avant de repartir
+    public float bounceBackSpeed = 8f;
+    public float bounceUpForce = 6f;
+    public float bounceDuration = 0.4f;
 
     [Header("Game State")]
     public bool GameOver = false;
@@ -30,6 +30,16 @@ public class Player_script : MonoBehaviour
         targetSpeed = startSpeed;
     }
 
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     void Update()
     {
         if (!GameOver)
@@ -40,7 +50,6 @@ public class Player_script : MonoBehaviour
                 if (bounceTimer <= 0f)
                 {
                     isBouncing = false;
-                    // Réinitialise la vitesse cible pour repartir en douceur
                     targetSpeed = startSpeed;
                 }
             }
@@ -74,7 +83,6 @@ public class Player_script : MonoBehaviour
         isBouncing = true;
         bounceTimer = bounceDuration;
 
-        // Saut en arrière : recul horizontal + impulsion vers le haut
         rb.linearVelocity = new Vector2(-bounceBackSpeed, bounceUpForce);
     }
 
@@ -90,10 +98,8 @@ public class Player_script : MonoBehaviour
             isGrounded = true;
         }
 
-        // Détection mur par normale de contact (surface verticale)
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            // Si la normale est majoritairement horizontale  c'est un mur
             if (Mathf.Abs(contact.normal.x) > 0.7f && !isBouncing)
             {
                 TriggerWallBounce();
@@ -112,5 +118,24 @@ public class Player_script : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
             isGrounded = false;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        GameObject spawn = GameObject.Find("SpawnPoint");
+
+        if (spawn != null)
+            transform.position = spawn.transform.position;
+        else
+            transform.position = Vector3.zero;
+
+        rb.linearVelocity = Vector2.zero;
+
+        targetSpeed = startSpeed;
+        isBouncing = false;
+        bounceTimer = 0f;
+        GameOver = false;
+
+        transform.rotation = Quaternion.identity;
     }
 }
