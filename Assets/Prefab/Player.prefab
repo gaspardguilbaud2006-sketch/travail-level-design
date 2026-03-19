@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 6931732885317022292}
   - component: {fileID: 8933881697105315}
   - component: {fileID: 2231013035172352848}
+  - component: {fileID: 3687401888336159732}
+  - component: {fileID: -7908725070725651050}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -183,3 +185,27 @@ MonoBehaviour:
   bounceUpForce: 3
   bounceDuration: 0.4
   GameOver: 0
+--- !u!114 &3687401888336159732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703550135162952035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e38ed4d1802e0f44fbf13059fe5968a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-7908725070725651050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703550135162952035}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8712e66155c193d459e94d432bdbf7ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
