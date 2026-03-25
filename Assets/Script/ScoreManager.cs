@@ -10,14 +10,8 @@ public class ScoreManager : MonoBehaviour
     [Header("Paramètres")]
     public float scoreMultiplier = 10f;
 
-    private float score = 0f;
-    private const string KEY_SCORE = "player_score";
-
-    void Start()
-    {
-        // Recharge le score sauvegardé
-        score = PlayerPrefs.GetFloat(KEY_SCORE, 0f);
-    }
+    // Variable statique : survit au rechargement de scène mais pas au lancement du jeu
+    private static float score = 0f;
 
     void Update()
     {
@@ -25,13 +19,10 @@ public class ScoreManager : MonoBehaviour
         score = Mathf.Max(0f, score);
 
         scoreText.text = "Score : " + Mathf.FloorToInt(score);
-
-        // Sauvegarde en continu
-        PlayerPrefs.SetFloat(KEY_SCORE, score);
     }
 
     public static void ResetScore()
     {
-        PlayerPrefs.DeleteKey("player_score");
+        score = 0f;
     }
 }

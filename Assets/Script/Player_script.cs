@@ -137,6 +137,7 @@ public class Player_script : MonoBehaviour
         isBouncing = false;
         bounceTimer = 0f;
         GameOver = false;
+        ScoreManager.ResetScore();
 
         transform.rotation = Quaternion.identity;
     }

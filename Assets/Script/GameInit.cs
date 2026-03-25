@@ -7,7 +7,7 @@ public class GameInit : MonoBehaviour
         if (!GameStartTracker.hasStarted)
         {
             CheckpointManager.ClearCheckpoint();
-            ScoreManager.ResetScore();
+            ScoreManager.ResetScore(); // 👈 déjà là ?
             GameStartTracker.hasStarted = true;
         }
     }
