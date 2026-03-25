@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class Player_script : MonoBehaviour
 {
+    [HideInInspector] public float CurrentSpeed;
     [Header("Movement")]
     public float startSpeed = 5f;
     public float maxSpeed = 20f;
@@ -69,13 +70,14 @@ public class Player_script : MonoBehaviour
         targetSpeed += acceleration * Time.deltaTime;
         targetSpeed = Mathf.Clamp(targetSpeed, startSpeed, maxSpeed);
 
-        float currentSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, lerpSpeed * Time.deltaTime);
-        float yVelocity = rb.linearVelocity.y;
+        // Remplace "float currentSpeed = ..." par :
+        CurrentSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, lerpSpeed * Time.deltaTime);
 
+        float yVelocity = rb.linearVelocity.y;
         if (isGrounded)
             yVelocity = 0f;
 
-        rb.linearVelocity = new Vector2(currentSpeed, yVelocity);
+        rb.linearVelocity = new Vector2(CurrentSpeed, yVelocity);
     }
 
     void TriggerWallBounce()

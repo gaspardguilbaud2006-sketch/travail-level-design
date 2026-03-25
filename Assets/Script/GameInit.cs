@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameInit : MonoBehaviour
 {
@@ -7,6 +7,7 @@ public class GameInit : MonoBehaviour
         if (!GameStartTracker.hasStarted)
         {
             CheckpointManager.ClearCheckpoint();
+            ScoreManager.ResetScore();
             GameStartTracker.hasStarted = true;
         }
     }
