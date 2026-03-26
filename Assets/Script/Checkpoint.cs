@@ -7,6 +7,9 @@ public class Checkpoint : MonoBehaviour
     public Sprite flagInactive; // drapeau blanc
     public Sprite flagActive;   // drapeau rouge
 
+    [Header("Disable_Cinematique")]
+    public GameObject Cinematique;
+
     [Header("UI")]
     public GameObject checkpointText; // objet TextMeshPro enfant
 
@@ -30,6 +33,7 @@ public class Checkpoint : MonoBehaviour
             // Afficher le texte
             if (checkpointText != null)
                 checkpointText.SetActive(true);
+                Cinematique.SetActive(false);
         }
     }
 }
