@@ -19,7 +19,10 @@ public class Player_script : MonoBehaviour
     [Header("Game State")]
     public bool GameOver = false;
 
-    [HideInInspector] public bool isRespawning = false; // Bloque le mouvement temporairement
+    [Header("Control")]
+    public bool canMove = true;
+
+    [HideInInspector] public bool isRespawning = false;
 
     private Rigidbody2D rb;
     private bool isGrounded = false;
@@ -27,6 +30,8 @@ public class Player_script : MonoBehaviour
 
     private bool isBouncing = false;
     private float bounceTimer = 0f;
+
+    private static bool firstSceneLoad = true;
 
     // INITIALISATION
     void Awake()
@@ -51,8 +56,7 @@ public class Player_script : MonoBehaviour
 
     void Update()
     {
-        // Si le joueur est en respawn ou game over, bloquer le mouvement
-        if (GameOver || isRespawning)
+        if (!canMove || GameOver || isRespawning)
         {
             if (rb != null)
                 rb.linearVelocity = Vector2.zero;
@@ -76,7 +80,7 @@ public class Player_script : MonoBehaviour
 
     void MovePlayer()
     {
-        if (isRespawning) return; // bloque le mouvement pendant respawn
+        if (!canMove || isRespawning) return;
 
         targetSpeed += acceleration * Time.deltaTime;
         targetSpeed = Mathf.Clamp(targetSpeed, startSpeed, maxSpeed);
@@ -92,6 +96,8 @@ public class Player_script : MonoBehaviour
 
     void TriggerWallBounce()
     {
+        if (!canMove) return;
+
         isBouncing = true;
         bounceTimer = bounceDuration;
 
@@ -100,6 +106,8 @@ public class Player_script : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        if (!canMove) return;
+
         if (collision.gameObject.CompareTag("Enemy"))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -120,6 +128,8 @@ public class Player_script : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D collision)
     {
+        if (!canMove) return;
+
         if (collision.gameObject.CompareTag("Ground"))
             isGrounded = true;
     }
@@ -130,9 +140,16 @@ public class Player_script : MonoBehaviour
             isGrounded = false;
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Checkpoint"))
+        {
+            canMove = true;
+        }
+    }
+
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Ne rien téléporter ici : PlayerRespawn gère le placement
         if (rb != null)
             rb.linearVelocity = Vector2.zero;
 
@@ -140,5 +157,7 @@ public class Player_script : MonoBehaviour
         isBouncing = false;
         bounceTimer = 0f;
         GameOver = false;
+
+        canMove = false;
     }
 }
