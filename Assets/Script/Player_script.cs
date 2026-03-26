@@ -1,9 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Player_script : MonoBehaviour
 {
     [HideInInspector] public float CurrentSpeed;
+
     [Header("Movement")]
     public float startSpeed = 5f;
     public float maxSpeed = 20f;
@@ -18,6 +19,8 @@ public class Player_script : MonoBehaviour
     [Header("Game State")]
     public bool GameOver = false;
 
+    [HideInInspector] public bool isRespawning = false; // Bloque le mouvement temporairement
+
     private Rigidbody2D rb;
     private bool isGrounded = false;
     private float targetSpeed;
@@ -25,9 +28,14 @@ public class Player_script : MonoBehaviour
     private bool isBouncing = false;
     private float bounceTimer = 0f;
 
-    void Start()
+    // INITIALISATION
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+    }
+
+    void Start()
+    {
         targetSpeed = startSpeed;
     }
 
@@ -43,34 +51,36 @@ public class Player_script : MonoBehaviour
 
     void Update()
     {
-        if (!GameOver)
+        // Si le joueur est en respawn ou game over, bloquer le mouvement
+        if (GameOver || isRespawning)
         {
-            if (isBouncing)
+            if (rb != null)
+                rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        if (isBouncing)
+        {
+            bounceTimer -= Time.deltaTime;
+            if (bounceTimer <= 0f)
             {
-                bounceTimer -= Time.deltaTime;
-                if (bounceTimer <= 0f)
-                {
-                    isBouncing = false;
-                    targetSpeed = startSpeed;
-                }
-            }
-            else
-            {
-                MovePlayer();
+                isBouncing = false;
+                targetSpeed = startSpeed;
             }
         }
         else
         {
-            rb.linearVelocity = Vector2.zero;
+            MovePlayer();
         }
     }
 
     void MovePlayer()
     {
+        if (isRespawning) return; // bloque le mouvement pendant respawn
+
         targetSpeed += acceleration * Time.deltaTime;
         targetSpeed = Mathf.Clamp(targetSpeed, startSpeed, maxSpeed);
 
-        // Remplace "float currentSpeed = ..." par :
         CurrentSpeed = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, lerpSpeed * Time.deltaTime);
 
         float yVelocity = rb.linearVelocity.y;
@@ -96,9 +106,7 @@ public class Player_script : MonoBehaviour
         }
 
         if (collision.gameObject.CompareTag("Ground"))
-        {
             isGrounded = true;
-        }
 
         foreach (ContactPoint2D contact in collision.contacts)
         {
@@ -124,21 +132,13 @@ public class Player_script : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        GameObject spawn = GameObject.Find("SpawnPoint");
-
-        if (spawn != null)
-            transform.position = spawn.transform.position;
-        else
-            transform.position = Vector3.zero;
-
-        rb.linearVelocity = Vector2.zero;
+        // Ne rien téléporter ici : PlayerRespawn gère le placement
+        if (rb != null)
+            rb.linearVelocity = Vector2.zero;
 
         targetSpeed = startSpeed;
         isBouncing = false;
         bounceTimer = 0f;
         GameOver = false;
-        ScoreManager.ResetScore();
-
-        transform.rotation = Quaternion.identity;
     }
 }

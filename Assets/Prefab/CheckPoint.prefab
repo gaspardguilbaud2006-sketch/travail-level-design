@@ -252,7 +252,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flagInactive: {fileID: 267350893358157575, guid: 7ae1a0c2577727b4d9e03e939c48ee7d, type: 3}
   flagActive: {fileID: -1423414981562061391, guid: 990560f2537527c45a6ce876c7ff6ad2, type: 3}
-  checkpointText: {fileID: 0}
+  checkpointText: {fileID: 5009140964655417412}
 --- !u!1 &5009140964655417412
 GameObject:
   m_ObjectHideFlags: 0

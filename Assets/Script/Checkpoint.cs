@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using TMPro;
 
 public class Checkpoint : MonoBehaviour
@@ -14,14 +14,14 @@ public class Checkpoint : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         if (checkpointText != null)
-            checkpointText.SetActive(false); // caché au départ
+            checkpointText.SetActive(false); // cachÃ© au dÃ©part
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            CheckpointManager.SaveCheckpoint(transform.position);
+            CheckpointManager.SaveCheckpoint(transform.position, ScoreManager.GetScore());
 
             // Changer le sprite en rouge
             if (flagActive != null)
